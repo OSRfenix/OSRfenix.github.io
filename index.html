@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+-<!DOCTYPE html>
 <html>
 <head>
 <meta charset="utf-8">
@@ -24,8 +24,8 @@ body { margin: 0; padding: 0; }
 	mapboxgl.accessToken = 'pk.eyJ1IjoiZmVuaXhpc3IiLCJhIjoiY2p0ZzRrZG8zMXpxYzN6b2F2dDNoaDdpZyJ9.9WEldBGyCURLsfR3CZmLWA';
 var map = new mapboxgl.Map({
 container: 'map',
-style: 'mapbox://styles/mapbox/dark-v9',
-center: [-103.59179687498357, 40.66995747013945],
+style: 'mapbox://styles/fenixisr/ckmnzanwn1qpe17odjzu88f7w',
+center: [-90.59179687498357, 27.66995747013945],
 zoom: 4
 });
 
@@ -40,26 +40,6 @@ map.on('load', function () {
 // Add a new source from our GeoJSON data and
 // set the 'cluster' option to true. GL-JS will
 // add the point_count property to your source data.
-map.addSource('mapbox-dem', {
-'type': 'raster-dem',
-'url': 'mapbox://mapbox.mapbox-terrain-dem-v1',type: 'geojson',<!DOCTYPE html>
-
-'tileSize': 512,
-'maxzoom': 14
-});
-// add the DEM source as a terrain layer with exaggerated height
-map.setTerrain({ 'source': 'mapbox-dem', 'exaggeration': 2 });
- 
-// add a sky layer that will show when the map is highly pitched
-map.addLayer({
-'id': 'sky',
-'type': 'sky',
-'paint': {
-'sky-type': 'atmosphere',
-'sky-atmosphere-sun': [0.0, 0.0],
-'sky-atmosphere-sun-intensity': 15
-}
-});
 
 map.addSource('datteams', {
 type: 'geojson',
@@ -67,8 +47,8 @@ type: 'geojson',
 data:
 'https://raw.githubusercontent.com/OSRfenix/test/main/osr1.geojson',
 cluster: true,
-clusterMaxZoom: 14, // Max zoom to cluster points on
-clusterRadius: 160 // Radius of each cluster when clustering points (defaults to 50)
+clusterMaxZoom: 10, // Max zoom to cluster points on
+clusterRadius: 30 // Radius of each cluster when clustering points (defaults to 50)
 });
  
 map.addLayer({
@@ -94,7 +74,7 @@ paint: {
 20,
 50,
 30,
-600,
+100,
 40
 ]
 }
@@ -117,20 +97,31 @@ id: 'unclustered-point',
 type: 'circle',
 source: 'datteams',
 filter: ['!', ['has', 'point_count']],
+
 paint: {
-'circle-color': '#FFFFFF',
+'circle-color': '#FFAF7A',
 'circle-radius': {
 'base': 6,
 'stops': [
-[12, 7],
+[12, 6],
 [22, 300]
 ]
 },
 'circle-stroke-width': 1,
-'circle-stroke-color': '#000000'
+'circle-stroke-color': '#FFAF7a'
 }
 });
-
+        map.addLayer({
+        id: "uncluster-count",
+        type: "symbol",
+        source: "datteams",
+        filter: ["!", ["has", "point_count"]],
+        layout: {
+          "text-field": "1",
+          "text-font": ["DIN Offc Pro Medium", "Arial Unicode MS Bold"],
+          "text-size": 12
+        }
+      });
 // inspect a cluster on click
 map.on('click', 'clusters', function (e) {
 var features = map.queryRenderedFeatures(e.point, {
