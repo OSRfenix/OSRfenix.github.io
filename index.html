@@ -42,7 +42,8 @@ map.on('load', function () {
 // add the point_count property to your source data.
 map.addSource('mapbox-dem', {
 'type': 'raster-dem',
-'url': 'mapbox://mapbox.mapbox-terrain-dem-v1',
+'url': 'mapbox://mapbox.mapbox-terrain-dem-v1',type: 'geojson',<!DOCTYPE html>
+
 'tileSize': 512,
 'maxzoom': 14
 });
