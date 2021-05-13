@@ -1,4 +1,4 @@
--<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
 <meta charset="utf-8">
@@ -24,13 +24,11 @@ body { margin: 0; padding: 0; }
 	mapboxgl.accessToken = 'pk.eyJ1IjoiZmVuaXhpc3IiLCJhIjoiY2p0ZzRrZG8zMXpxYzN6b2F2dDNoaDdpZyJ9.9WEldBGyCURLsfR3CZmLWA';
 var map = new mapboxgl.Map({
 container: 'map',
-<<<<<<< Updated upstream
-style: 'mapdbox://styles/fenixisr/ckmnzanwn1qpe17odjzu88f7w',
-center: [-90.59179687498357, 27.66995747013945],
-zoom: 4,
-maxZoom 15
+style: 'mapbox://styles/mapbox/dark-v9',
+center: [-103.59179687498357, 40.66995747013945],
+zoom: 4
 });
-map.addControl(new mapboxgl.NavigationControl());
+
 //map.addControl(
 //new MapboxDirections({
 //accessToken: mapboxgl.accessToken
@@ -49,13 +47,82 @@ type: 'geojson',
 data:
 'https://raw.githubusercontent.com/OSRfenix/test/main/osr1.geojson',
 cluster: true,
-clusterMaxZoom: 10, // Max zoom to cluster points on
-clusterRadius: 30 // Radius of each cluster when clustering points (defaults to 50)
+clusterMaxZoom: 14, // Max zoom to cluster points on
+clusterRadius: 160 // Radius of each cluster when clustering points (defaults to 50)
 });
+
+map.addSource('datteamsheat', {
+type: 'geojson',
+
+data:
+'https://raw.githubusercontent.com/OSRfenix/test/main/osr1.geojson',
+cluster: false,
+clusterMaxZoom: 14, // Max zoom to cluster points on
+clusterRadius: 160 // Radius of each cluster when clustering points (defaults to 50)
+});
+
+map.addLayer({
+  id: 'dat-heat',
+  type: 'heatmap',
+  source: 'datteamsheat',
+  maxzoom: 19,
+  paint: {
+    // increase weight as diameter breast height increases
+    'heatmap-weight': {
+      property: 'dat',
+      type: 'exponential',
+      stops: [
+        [1, .5],
+        [62, 1]
+      ]
+    },
+    // increase intensity as zoom level increases
+    'heatmap-intensity': {
+      stops: [
+        [11, 2],
+        [15, 6]
+      ]
+    },
+    // assign color values be applied to points depending on their density
+    'heatmap-color': [
+      'interpolate',
+      ['linear'],
+      ['heatmap-density'],
+      0,
+	  'rgba(33,102,172,0)',
+      0.2,
+      'rgb(103,169,207)',
+      0.4,
+      'rgb(209,229,240)',
+      0.6,
+      'rgb(253,219,199)',
+      0.8,
+      'rgb(239,138,98)',
+      1,
+      'rgb(178,24,43)'
+    ],
+    // increase radius as zoom increases
+    'heatmap-radius': {
+      stops: [
+        [11, 40],
+        [15, 80]
+      ]
+    },
+    // decrease opacity to transition into the circle layer
+    'heatmap-opacity': {
+      default: 1,
+      stops: [
+        [14, 1],
+        [15, 0]
+      ]
+    },
+  }
+}, 'waterway-label');
+ 
  
 map.addLayer({
 id: 'clusters',
-type: 'circle',
+type: 'heatmap',
 source: 'datteams',
 filter: ['has', 'point_count'],
 paint: {
@@ -68,7 +135,7 @@ paint: {
 25,
 '#FF781F',
 50,
-'#ffc20c'
+'#FF6600'
 ],
 'circle-radius': [
 'step',
@@ -76,7 +143,7 @@ paint: {
 20,
 50,
 30,
-100,
+600,
 40
 ]
 }
@@ -90,8 +157,8 @@ filter: ['has', 'point_count'],
 layout: {
 'text-field': '{point_count_abbreviated}',
 'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
-'text-size': 14
-}
+'text-size': 30,
+
 });
  
 map.addLayer({
@@ -99,31 +166,20 @@ id: 'unclustered-point',
 type: 'circle',
 source: 'datteams',
 filter: ['!', ['has', 'point_count']],
-
 paint: {
-'circle-color': '#FFAF7A',
+'circle-color': '#FFFFFF',
 'circle-radius': {
 'base': 6,
 'stops': [
-[12, 6],
+[12, 7],
 [22, 300]
 ]
 },
 'circle-stroke-width': 1,
-'circle-stroke-color': '#FFAF7a'
+'circle-stroke-color': '#000000'
 }
 });
-        map.addLayer({
-        id: "uncluster-count",
-        type: "symbol",
-        source: "datteams",
-        filter: ["!", ["has", "point_count"]],
-        layout: {
-          "text-field": "1",
-          "text-font": ["DIN Offc Pro Medium", "Arial Unicode MS Bold"],
-          "text-size": 12
-        }
-      });
+
 // inspect a cluster on click
 map.on('click', 'clusters', function (e) {
 var features = map.queryRenderedFeatures(e.point, {
@@ -159,10 +215,10 @@ while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
 coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
 }
  
-//new mapboxgl.Popup()
-//.setLngLat(coordinates)
-//.setHTML()
-//.addTo(map);
+new mapboxgl.Popup()
+.setLngLat(coordinates)
+.setHTML(Name)
+.addTo(map);
 });
  
 map.on('mouseenter', 'clusters', function () {
@@ -172,7 +228,6 @@ map.on('mouseleave', 'clusters', function () {
 map.getCanvas().style.cursor = '';
 });
 });
-L.mapbox.legendControl({ position: 'topright' }).addLegend('<strong>My walk from the White House to the hill!</strong>').addTo(map);
 
 
 </script>
